@@ -1,0 +1,23 @@
+[
+    {
+        "id": 1,
+        "userName": "hiep",
+        "passWord": "hiep",
+        "displayName": "Hiệp Chủ Nhà",
+        "type": "chunha"
+    },
+    {
+        "id": 2,
+        "userName": "trung",
+        "passWord": "trung",
+        "displayName": "Trung Giúp Việc",
+        "type": "giupviec"
+    },
+    {
+        "id": 3,
+        "userName": "duc",
+        "passWord": "duc",
+        "displayName": "Đức Quản Gia",
+        "type": "quangia"
+    }
+]
