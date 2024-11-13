@@ -1,19 +1,14 @@
 #include <SoftwareSerial.h>
 #include "ArduinoJson.h"
 #include <WebSocketsServer.h>
-#define RX_PIN D2 // Chân RX-của EspSoftwareSerial
-#define TX_PIN D1 // Chân TX của EspSoftwareSerial
+#define RX_PIN D2 
+#define TX_PIN D1 
 //Setup Wifi
-const char *ssid =  "DucDz";   //Wifi SSID (Name)
-const char *pass =  "Trunganc"; //wifi password
+const char *ssid =  "DucDz";   
+const char *pass =  "Trunganc"; 
 SoftwareSerial mySerial(RX_PIN , TX_PIN);
 StaticJsonDocument<200> json;
 WebSocketsServer webSocket = WebSocketsServer(81);
-
-
-
-// #define LED_BUTTON_PIN D0
-// #define DOOR_BUTTON_PIN D5
 
 float temperature = 0;
 float humidity = 0;
@@ -22,26 +17,19 @@ bool livingRoomLedState = false;
 bool bedRoomLedState = false;
 bool doorState = false;
 bool fireDetected = false;
-// bool livingRoomLedButton = HIGH;
-// bool bedRoomLedButton = HIGH;
-// bool doorButton = HIGH;
 
 void setup() {
   Serial.begin(9600);
   mySerial.begin(9600);
-  // pinMode(LED_BUTTON_PIN, INPUT_PULLUP);
-  // pinMode(DOOR_BUTTON_PIN, INPUT_PULLUP);
 
-
-//setup connect
   Serial1.println("Connecting to wifi");
 
-  IPAddress apIP(192, 168, 99, 100);   //Static IP for wifi gateway
+  IPAddress apIP(192, 168, 99, 100);  
   WiFi.softAPConfig(apIP, apIP, IPAddress(255, 255, 255, 0)); //set Static IP gateway on NodeMCU
-  WiFi.softAP(ssid, pass); //turn on WIFI
+  WiFi.softAP(ssid, pass);
 
-  webSocket.begin(); //websocket Begin
-  webSocket.onEvent(webSocketEvent); //set Event for websocket
+  webSocket.begin(); 
+  webSocket.onEvent(webSocketEvent);
   Serial1.println("Websocket is started");
 }
 
@@ -161,74 +149,3 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
       break;
   }
 }
-
-// void livingRoomButton(){
-//   if(digitalRead(LED_BUTTON_PIN)==LOW){
-//     if (livingRoomLedButton==HIGH){
-//       livingRoomLedState = !livingRoomLedState;
-//       delay(200);
-//     }
-//     livingRoomLedButton = LOW;
-//   }
-//   else{
-//     livingRoomLedButton = HIGH;
-//   }
-  
-//   json.clear();
-//   json["led"] = ledState;
-//   serializeJson(json, mySerial);
-//   mySerial.println();
-// }
-
-// void DoorButton(){
-//   if(digitalRead(DOOR_BUTTON_PIN)==LOW){
-//     if (doorState==HIGH){
-//       doorState = !doorState;
-//       delay(200);
-//     }
-//     doorState = LOW;
-//   }
-//   else{
-//     doorState = HIGH;
-//   }
-//   json.clear();
-//   json["door"] = doorState;
-//   serializeJson(json, mySerial);
-//   mySerial.println();
-// }
-
-// void remoteLivingRoomLed(bool active){
-//   if(active){
-//     livingRoomLedState = true;
-//   }else{
-//     livingRoomLedState = false;
-//   }
-//   json.clear();
-//   json["livingRoomLed"] = livingRoomLedState;
-//   serializeJson(json, mySerial);
-//   mySerial.println();
-// }
-
-// void remoteBedRoomLed(bool active){
-//   if(active){
-//     bedRoomLedState = true;
-//   }else{
-//     bedRoomLedState = false;
-//   }
-//   json.clear();
-//   json["bedRoomLed"] = ledState;
-//   serializeJson(json, mySerial);
-//   mySerial.println();
-// }
-
-// void remoteDoor(bool active){
-//   if(active){
-//     doorState = true;
-//   }else{
-//     doorState = false;
-//   }
-//   json.clear();
-//   json["door"] = ledState;
-//   serializeJson(json, mySerial);
-//   mySerial.println();
-// }

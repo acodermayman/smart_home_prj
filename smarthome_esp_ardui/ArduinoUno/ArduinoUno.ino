@@ -17,12 +17,6 @@ int flameD0;
 
 bool fireDetected = false;
 
-// Servo myservo;
-// int pirState = LOW; //trạng thái PIR
-// const unsigned long timeout = 3000; //thời gian chờ đóng cửa
-// unsigned long motionTimer = 0; //đếm thời gian
-// LiquidCrystal_I2C lcd(0x27,16,2);
-
 float temperature = 0;
 float humidity = 0;
 unsigned long lastUpdateTime = 0;
@@ -50,22 +44,12 @@ void setup() {
   myservo.attach(SERVO_PIN);      
   myservo.write(90);              
 
-  pinMode(PIR_PIN, INPUT);        // Chân cảm biến PIR là đầu vào
-
+  pinMode(PIR_PIN, INPUT);        
   pinMode(pinD0, INPUT);
   pinMode(BUZZER_PIN, OUTPUT);
 
   Serial.begin(9600);
   mySerial.begin(9600);
-
-  // // Hiển thị Hello World khi bắt đầu chương trình
-  // Khởi tạo LCD 
-  // lcd.init();
-  // lcd.backlight();
-  // lcd.setCursor(3, 0);
-  // lcd.print("Welcome");
-  // delay(3000);
-  // lcd.clear();
 
   sendStatus();
 }
@@ -166,75 +150,3 @@ void sendStatus() {
   serializeJson(json, mySerial);
   mySerial.println();
 }
-
-// void sendInitialStatus() {
-//   json.clear();
-//   json["livingRoomLedState"] = livingRoomLedState;
-//   json["bedRoomLedState"] = bedRoomLedState;
-//   json["door"] = doorState;
-//   json["temperature"] = temperature;
-//   json["humidity"] = humidity;
-//   serializeJson(json, mySerial);
-//   mySerial.println();
-
-// void loop() {
-//   unsigned long currentTime = millis(); 
-//   if (currentTime - lastUpdateTime >= 2000) {
-//   // Đọc giá trị nhiệt độ và độ ẩm từ cảm biến
-//   dhtEvent();
-//   lastUpdateTime = currentTime;
-//   }
-
-//   json.clear();
-//   if (mySerial.available()){
-//     String line = mySerial.readStringUntil('\n');
-//     DeserializationError error = deserializeJson(json, line);
-//     if (error) {
-//       Serial.print("deserializeJson() failed: ");
-//       Serial.println(error.c_str());
-//       return;
-//     }
-//     led = json["led"];  
-//   }
-//   digitalWrite(LED_PIN, led);
-
-// }
-
-// void dhtEvent(){
-//   temperature = dht.readTemperature();
-//   humidity = dht.readHumidity();
-//   json["temperature"] = temperature;
-//   json["humidity"] = humidity;
-//   serializeJson(json, mySerial);
-//   mySerial.println();
-//   serializeJson(json, Serial);
-//   Serial.println();
-// }
-//}
-
-// void doorFunction() {
-//   lcd.setCursor(0, 0);
-//   lcd.print("Open The Door");    // Hiển thị "Open The Door"
-//   myservo.write(90);             // Quay servo tới 90 độ
-//   delay(1000);                   // Đợi một chút để servo quay
-  
-//   motionTimer = millis();        // Bắt đầu đếm thời gian
-  
-//   // Kiểm tra cảm biến PIR để phát hiện chuyển động
-//   while (millis() - motionTimer < timeout) {
-//     pirState = digitalRead(pirPin); // Đọc trạng thái cảm biến PIR
-    
-//     if (pirState == HIGH) {         // Nếu có chuyển động
-//       motionTimer = millis();       // Reset bộ đếm thời gian
-//     }
-
-//     delay(100);  // Chờ đợi một chút trước khi đọc lại cảm biến PIR
-//   }
-  
-//   // Nếu không có chuyển động sau 3 giây
-//   myservo.write(0);              // Đưa servo về 0 độ
-//   lcd.clear();                    // Xóa LCD
-//   lcd.setCursor(0, 0);
-//   lcd.print("Close The Door");    // Hiển thị "Close The Door"
-//   delay(1000);                    // Đợi một chút trước khi tiếp tục
-// }
