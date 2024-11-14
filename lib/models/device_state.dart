@@ -19,8 +19,8 @@ class DeviceState {
 
   factory DeviceState.fromJson(Map<String, dynamic> json) {
     return DeviceState(
-        temperature: (json["temperature"] ?? 0.0) as double,
-        humidity: (json["humidity"] ?? 0.0) as double,
+        temperature: (json["temperature"] as num).toDouble(),
+        humidity: (json["humidity"]as num).toDouble(),
         livingRoomLedState: (json["livingRoomLedState"] ?? false) as bool,
         bedRoomLedState: (json["bedRoomLedState"] ?? false) as bool,
         doorState: (json["doorState"] ?? false) as bool,

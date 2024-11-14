@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ffi';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:smarthome_app/models/account.dart';
@@ -59,13 +60,13 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  void toggleDoor() {
+  void toggleDoor(bool door) {
     setState(() {
-      deviceState.doorState = !deviceState.doorState;
+      deviceState.doorState = door;
       if (deviceState.doorState) {
-        channel.sink.add("DoorOn");
+        channel.sink.add("OpenDoor");
       } else {
-        channel.sink.add("DoorOff");
+        channel.sink.add("CloseDoor");
       }
     });
   }
@@ -88,6 +89,7 @@ class _HomePageState extends State<HomePage> {
           Map<String, dynamic> json = jsonDecode(message);
           setState(() {
             deviceState = DeviceState.fromJson(json);
+            print(deviceState);
             isLoaded = true;
             if (deviceState.fireDetected == true) {
               NotificationService.showInstantNotification(
@@ -421,7 +423,7 @@ class _HomePageState extends State<HomePage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     ElevatedButton(
-                        onPressed: toggleDoor,
+                        onPressed:()=> toggleDoor(true),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.blueAccent,
                           shape: RoundedRectangleBorder(
@@ -436,7 +438,7 @@ class _HomePageState extends State<HomePage> {
                       width: 10,
                     ),
                     ElevatedButton(
-                        onPressed: toggleDoor,
+                        onPressed:()=> toggleDoor(false),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.redAccent,
                           shape: RoundedRectangleBorder(
