@@ -43,7 +43,7 @@ void setup() {
 
   myservo.attach(SERVO_PIN);      
   myservo.write(90);              
-
+  myservo.detach();
   pinMode(PIR_PIN, INPUT);        
   pinMode(pinD0, INPUT);
   pinMode(BUZZER_PIN, OUTPUT);
@@ -56,13 +56,13 @@ void setup() {
 
 void loop() {
   updateDHTSensor();
-  handlePIRSensor();
   receiveCommands();
+  handleFireSensor();
 }
 
 void updateDHTSensor() {
   unsigned long currentTime = millis();
-  if (currentTime - lastUpdateTime >= 2000) {
+  if (currentTime - lastUpdateTime >= 5000) {
     temperature = dht.readTemperature();
     humidity = dht.readHumidity();
     sendStatus();  // Send updated JSON data
@@ -116,29 +116,34 @@ void processCommand(JsonDocument& json) {
 }
 
 void openDoor() {
+  myservo.attach(SERVO_PIN);  // Attach before moving
   myservo.write(0);
+  delay(100);                 // Small delay to allow movement
+  myservo.detach(); 
   doorState = true;
   sendStatus();
 }
 
 void closeDoor() {
+  myservo.attach(SERVO_PIN);  // Attach before moving
   myservo.write(90);
+  delay(100);                 // Small delay to allow movement
+  myservo.detach(); 
   doorState = false;
   sendStatus();
 }
 
 void handleFireSensor() {
   flameD0 = digitalRead(pinD0);
-  if (flameD0 == 0) {
-    digitalWrite(BUZZER_PIN, HIGH);
-    fireDetected = true;
-    delay(2000);
-  } else {
-    fireDetected = false;
-    digitalWrite(BUZZER_PIN,LOW);
+  bool newFireDetected = (flameD0 == 0);
+  if (newFireDetected != fireDetected) {
+    fireDetected = newFireDetected;
+    digitalWrite(BUZZER_PIN, fireDetected ? HIGH : LOW);
+    sendStatus();  
   }
-  sendStatus();  
 }
+
+
 void sendStatus() {
   json.clear();
   json["livingRoomLedState"] = livingRoomLedState;

@@ -9,6 +9,7 @@ import 'package:smarthome_app/views/login.dart';
 import 'package:smarthome_app/views/notification.dart';
 import 'package:web_socket_channel/io.dart';
 // import 'package:web_socket_channel/status.dart' as status;
+import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key, this.url, required this.account});
@@ -19,7 +20,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final String esp_url = 'ws://192.168.99.100:81';
+  final String socketUrl = 'ws://172.20.10.7:3000/';
   bool isConnected = false;
   bool isLoaded = false;
   // bool isLedLivingRoomActive = false;
@@ -35,17 +36,20 @@ class _HomePageState extends State<HomePage> {
       doorState: false,
       fireDetected: false);
   late IOWebSocketChannel channel;
+  // late IO.Socket socket;
   String message = '';
 
-  //Function
+  // Function
   void toggleLivingRoomLed() {
     setState(() {
       deviceState.livingRoomLedState = !deviceState.livingRoomLedState;
     });
     if (deviceState.livingRoomLedState) {
       channel.sink.add("LivingRoomLedOn");
+      // socket.emit('command', {"LivingRoomLedOn"});
     } else {
       channel.sink.add("LivingRoomLedOff");
+      // socket.emit('command', {"LivingRoomLedOff"});
     }
   }
 
@@ -54,8 +58,12 @@ class _HomePageState extends State<HomePage> {
       deviceState.bedRoomLedState = !deviceState.bedRoomLedState;
     });
     if (deviceState.bedRoomLedState) {
+      // socket.emit('command', {"BedRoomLedOn"});
+
       channel.sink.add("BedRoomLedOn");
     } else {
+      // socket.emit('command', {"BedRoomLedOff"});
+
       channel.sink.add("BedRoomLedOff");
     }
   }
@@ -64,8 +72,10 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       deviceState.doorState = door;
       if (deviceState.doorState) {
+        // socket.emit('command', {"OpenDoor"});
         channel.sink.add("OpenDoor");
       } else {
+        // socket.emit('command', {"CloseDoor"});
         channel.sink.add("CloseDoor");
       }
     });
@@ -73,19 +83,20 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
+    // initSocket();
     super.initState();
-    channel = IOWebSocketChannel.connect(widget.url ?? esp_url);
+
+    channel = IOWebSocketChannel.connect(widget.url ?? socketUrl);
     channel.stream.listen(
       (message) {
-        channel.sink.add('Flutter received $message');
         if (message == "connected") {
-          print('Received from MCU: $message');
+          print('Received from server: $message');
           setState(() {
             isConnected = true;
             message = message;
           });
         } else {
-          print('Received from MCU: $message');
+          print('Received from server: $message');
           Map<String, dynamic> json = jsonDecode(message);
           setState(() {
             deviceState = DeviceState.fromJson(json);
@@ -123,9 +134,68 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  // void initSocket() {
+  //   // Khởi tạo Socket.IO client
+  //   socket = IO.io(
+  //     socketUrl,
+  //     IO.OptionBuilder()
+  //         .setTransports(['websocket']) // Sử dụng transport WebSocket
+  //         .disableAutoConnect() // Không tự động kết nối
+  //         .build(),
+  //   );
+
+  //   // Kết nối đến server
+  //   socket.connect();
+
+  //   // Lắng nghe sự kiện 'connect'
+  //   socket.on('connect', (_) {
+  //     setState(() {
+  //       isConnected = true;
+  //     });
+  //     print('Connected to Socket.IO server');
+  //   });
+
+  //   // Lắng nghe sự kiện 'disconnect'
+  //   socket.on('disconnect', (_) {
+  //     setState(() {
+  //       isConnected = false;
+  //       isLoaded = false;
+  //     });
+  //     print('Disconnected from Socket.IO server');
+  //   });
+
+  //   // Lắng nghe dữ liệu từ server
+  //   socket.on('update_data', (data) {
+  //     print(data);
+  //     Map<String, dynamic> json = data;
+  //     setState(() {
+  //       deviceState = DeviceState.fromJson(json);
+  //       isLoaded = true;
+  //       if (deviceState.fireDetected == true) {
+  //         NotificationService.showInstantNotification(
+  //           "Cảnh báo cháy",
+  //           "Rất tiếc nhà bạn đã bị cháy :(",
+  //         );
+  //       }
+  //     });
+  //   });
+
+  //   // Lắng nghe lỗi
+  //   socket.on('error', (error) {
+  //     print('Socket error: $error');
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(
+  //         content: Text(error.toString()),
+  //         backgroundColor: Colors.red.shade400,
+  //       ),
+  //     );
+  //   });
+  // }
+
   @override
   void dispose() {
     channel.sink.close();
+    // socket.dispose();
     super.dispose();
   }
 
@@ -423,7 +493,7 @@ class _HomePageState extends State<HomePage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     ElevatedButton(
-                        onPressed:()=> toggleDoor(true),
+                        onPressed: () => toggleDoor(true),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.blueAccent,
                           shape: RoundedRectangleBorder(
@@ -438,7 +508,7 @@ class _HomePageState extends State<HomePage> {
                       width: 10,
                     ),
                     ElevatedButton(
-                        onPressed:()=> toggleDoor(false),
+                        onPressed: () => toggleDoor(false),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.redAccent,
                           shape: RoundedRectangleBorder(

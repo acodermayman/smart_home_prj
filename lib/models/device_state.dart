@@ -7,7 +7,7 @@ class DeviceState {
   bool livingRoomLedState;
   bool bedRoomLedState;
   bool doorState;
-  // final bool buzzerState;
+  // final boo l buzzerState;
   final bool fireDetected;
   DeviceState(
       {required this.temperature,
